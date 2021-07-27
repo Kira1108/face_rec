@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 from typing import List
 import os
 import urllib.request
+from mtcnn.mtcnn import MTCNN
 
 
 class FaceBoxFinder(ABC):
@@ -22,7 +23,7 @@ class FaceBoxFinder(ABC):
 
         for x, y, width, height in boxes:
             x2, y2 = x + width, y + height
-            img = cv2.rectangle(img, (x, y), (x2, y2), (255,0,0), 1)
+            img = cv2.rectangle(img, (x, y), (x2, y2), (255,0,0), 3)
 
         return img
 
@@ -53,3 +54,16 @@ class CascadeFinder(FaceBoxFinder):
 
     def detect(self, img:NDArray) -> List[List]:
         return self.classifier.detectMultiScale(img)
+
+
+class MTCNNFinder(FaceBoxFinder):
+    def __init__(self, thresh = 0.8):
+        self.detector = MTCNN()
+        self.thresh = thresh
+
+    def detect(self, img:NDArray) -> List[List]:
+        faces = self.detector.detect_faces(img)
+        return [face['box'] for face in faces 
+                if face['confidence'] > self.thresh]
+
+
