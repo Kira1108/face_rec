@@ -8,6 +8,11 @@ import urllib.request
 
 
 class FaceBoxFinder(ABC):
+    """
+        FaceBoxFinder interface defines an abstract method `detect`
+        
+    
+    """
     @abstractmethod
     def detect(self, img:NDArray) -> List[List]:
         raise NotImplementedError
